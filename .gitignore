@@ -1,0 +1,25 @@
+.vscode/
+.idea
+.DS_Store
+.gigaide
+img/*
+
+# Binaries
+*.tar.gz
+Accountabel AI*
+!accountabel.service
+*.log
+*.db
+go_build_*
+MusebotAdmin*
+github.com
+
+conf/mcp/mcp-*.json
+conf/systemd/.env-*
+conf/systemd/accountabel-*.service
+
+bin/
+build/
+output/
+data/
+release/

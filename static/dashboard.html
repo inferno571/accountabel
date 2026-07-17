@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Accountabel AI</title>
+    <meta name="description" content="Track your recovery journey with Accountabel AI. Live streaks, urge logging, mood tracking, and achievement badges.">
+    <link rel="stylesheet" href="/static/dashboard.css?v=3">
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">A</div>
+        <span>Accountabel</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Overview</div>
+        <a class="nav-item active" data-tab="dashboard" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+        </a>
+
+        <div class="nav-section-title" style="margin-top:1rem;">Actions</div>
+        <a class="nav-item" href="#" onclick="openModal('urge-modal'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v10m0 0l3-3m-3 3l-3-3"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+            Log Urge
+        </a>
+        <a class="nav-item" href="#" onclick="openModal('slip-modal'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            Log Slip
+        </a>
+        <a class="nav-item" href="#" onclick="startBreathing(); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+            4-7-8 Breathing
+        </a>
+        <a class="nav-item" href="#" onclick="addCopingTool(); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+            Add Coping Tool
+        </a>
+
+        <div class="nav-section-title" style="margin-top:1rem;">Account</div>
+        <a class="nav-item" href="/" style="color:var(--text-muted);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"/></svg>
+            Home
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-pill" onclick="logout()">
+            <div class="user-avatar">U</div>
+            <span>Sign Out</span>
+        </div>
+    </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <div class="header-actions">
+            <button class="btn btn-accent" onclick="openModal('urge-modal')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+                Log Urge
+            </button>
+            <button class="btn btn-danger-outline" onclick="openModal('slip-modal')">Log Slip</button>
+        </div>
+    </div>
+
+    <!-- Live Streak Hero -->
+    <div class="streak-hero">
+        <div class="streak-label">Current Streak</div>
+        <div class="streak-timer">
+            <div class="timer-unit">
+                <div class="timer-value" id="t-days">00</div>
+                <div class="timer-label">Days</div>
+            </div>
+            <div class="timer-sep">:</div>
+            <div class="timer-unit">
+                <div class="timer-value" id="t-hours">00</div>
+                <div class="timer-label">Hours</div>
+            </div>
+            <div class="timer-sep">:</div>
+            <div class="timer-unit">
+                <div class="timer-value" id="t-mins">00</div>
+                <div class="timer-label">Minutes</div>
+            </div>
+            <div class="timer-sep">:</div>
+            <div class="timer-unit">
+                <div class="timer-value" id="t-secs">00</div>
+                <div class="timer-label">Seconds</div>
+            </div>
+        </div>
+        <div class="streak-best">Personal best: <strong id="highest-streak">0</strong> days</div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Streak</div>
+            <div class="stat-value green" id="stat-streak">0</div>
+            <div class="stat-sub">consecutive days</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Check-ins</div>
+            <div class="stat-value accent" id="stat-checkins">0</div>
+            <div class="stat-sub">total logged</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Avg Craving</div>
+            <div class="stat-value orange" id="stat-avg-craving">--</div>
+            <div class="stat-sub">intensity / 10</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Slips</div>
+            <div class="stat-value blue" id="stat-slips">0</div>
+            <div class="stat-sub">total recorded</div>
+        </div>
+    </div>
+
+    <!-- Heatmap + Urge Log -->
+    <div class="grid-3">
+        <!-- Calendar Heatmap -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Activity Heatmap</div>
+                <div class="card-badge">Last 6 months</div>
+            </div>
+            <div class="heatmap-months" id="heatmap-months"></div>
+            <div class="heatmap-container">
+                <div class="heatmap-grid" id="heatmap-grid"></div>
+            </div>
+            <div class="heatmap-legend">
+                <span>Less</span>
+                <div class="cell" style="background:var(--bg-elevated);"></div>
+                <div class="cell" style="background:rgba(0,200,83,0.2);"></div>
+                <div class="cell" style="background:rgba(0,200,83,0.4);"></div>
+                <div class="cell" style="background:rgba(0,200,83,0.6);"></div>
+                <div class="cell" style="background:var(--green);"></div>
+                <span>More</span>
+                <span style="margin-left:0.5rem;">|</span>
+                <div class="cell" style="background:var(--red);"></div>
+                <span>Slip</span>
+            </div>
+        </div>
+
+        <!-- Habits Tracked -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Habits Tracked</div>
+            </div>
+            <div class="habits-list" id="habits-list">
+                <span class="habit-chip"><span class="dot"></span>Loading...</span>
+            </div>
+
+            <div style="margin-top:1.25rem;">
+                <div class="card-title" style="margin-bottom:0.75rem;">Coping Toolkit</div>
+                <div id="toolkit-list"></div>
+                <button class="btn btn-ghost" style="margin-top:0.75rem; width:100%;" onclick="addCopingTool()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+                    Add Tool
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Craving Trend + Urge Log -->
+    <div class="grid-2">
+        <!-- Craving Trend Chart -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Craving Trend</div>
+                <div class="card-badge">Last 30 entries</div>
+            </div>
+            <div class="chart-container" id="craving-chart">
+                <div class="chart-empty">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Recent Urges -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Recent Urges</div>
+                <button class="btn btn-ghost" style="padding:0.3rem 0.6rem; font-size:0.7rem;" onclick="openModal('urge-modal')">+ Log</button>
+            </div>
+            <div class="urge-list" id="urge-list">
+                <div class="empty-state"><p>Loading...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Badges -->
+    <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+            <div class="card-title">Achievements</div>
+            <div class="card-badge" id="badges-earned-count">0 / 8 earned</div>
+        </div>
+        <div class="badges-grid" id="badges-grid"></div>
+    </div>
+
+</div><!-- /main -->
+
+<!-- ═══ SOS FAB ═══ -->
+<button class="sos-fab" onclick="openModal('sos-modal')" title="Crisis Help">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+</button>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Urge Modal -->
+<div class="modal-overlay" id="urge-modal">
+    <div class="modal-box">
+        <div class="modal-title">Log an Urge</div>
+        <div class="modal-desc">Tracking cravings helps identify patterns. Every time you resist, you grow stronger.</div>
+        <div class="form-group">
+            <label class="form-label">Intensity</label>
+            <input type="range" id="urge-range" min="1" max="10" value="5" oninput="updateRangeDisplay()">
+            <div class="range-display">
+                <span id="urge-range-label" style="font-size:0.75rem;color:var(--text-muted);">Moderate</span>
+                <span class="range-value" id="urge-range-val">5</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Trigger / Context</label>
+            <textarea class="form-textarea" id="urge-context" placeholder="What were you doing? How do you feel?"></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Action Taken</label>
+            <select class="form-select" id="urge-action">
+                <option value="rode_it_out">Resisted / Rode it out</option>
+                <option value="used_coping_tool">Used a coping tool</option>
+                <option value="relapsed">Slipped</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeAllModals()">Cancel</button>
+            <button class="btn btn-accent" onclick="submitUrge()">Save Log</button>
+        </div>
+    </div>
+</div>
+
+<!-- Slip Modal -->
+<div class="modal-overlay" id="slip-modal">
+    <div class="modal-box">
+        <div class="modal-title">Log a Slip</div>
+        <div class="modal-desc">That's okay. Recovery is not linear. Logging this helps you understand your triggers and build resilience. Every day is a fresh start.</div>
+        <div class="form-group">
+            <label class="form-label">Notes (Optional)</label>
+            <textarea class="form-textarea" id="slip-notes" placeholder="What happened? Be kind to yourself."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeAllModals()">Cancel</button>
+            <button class="btn btn-danger-outline" onclick="submitSlip()">Log Slip & Reset</button>
+        </div>
+    </div>
+</div>
+
+<!-- SOS Modal -->
+<div class="modal-overlay" id="sos-modal">
+    <div class="modal-box" style="border: 1px solid rgba(255,61,113,0.3);">
+        <div class="modal-title" style="color:var(--red);">Crisis Resources</div>
+        <div class="modal-desc">You are not alone. Help is available right now.</div>
+        <div style="background:var(--red-soft); padding:1rem; border-radius:var(--radius-sm); margin-bottom:0.75rem;">
+            <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">National Suicide & Crisis Lifeline</div>
+            <a href="tel:988" style="font-size:1.5rem; color:var(--red); text-decoration:none; font-weight:800;">Dial 988</a>
+        </div>
+        <div style="background:var(--blue-soft); padding:1rem; border-radius:var(--radius-sm); margin-bottom:0.75rem;">
+            <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">SAMHSA National Helpline</div>
+            <a href="tel:1-800-662-4357" style="font-size:1.2rem; color:var(--blue); text-decoration:none; font-weight:800;">1-800-662-4357</a>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" style="width:100%;" onclick="closeAllModals()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Tool Modal -->
+<div class="modal-overlay" id="tool-modal">
+    <div class="modal-box">
+        <div class="modal-title">Add Coping Tool</div>
+        <div class="modal-desc">Enter a coping mechanism or distraction.</div>
+        <div class="form-group">
+            <input type="text" class="form-input" id="tool-input" placeholder="e.g., Go for a walk, Call a friend, Read a book">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeAllModals()">Cancel</button>
+            <button class="btn btn-accent" onclick="submitCopingTool()">Add Tool</button>
+        </div>
+    </div>
+</div>
+
+<!-- Breathing Modal -->
+<div class="modal-overlay" id="breathing-modal">
+    <div class="modal-box" style="text-align:center;">
+        <div class="modal-title">4-7-8 Breathing</div>
+        <div class="modal-desc">Follow the circle. This technique activates your parasympathetic nervous system.</div>
+        <div style="position:relative; width:140px; height:140px; margin:1.5rem auto;">
+            <div id="breathing-circle" style="width:100%;height:100%;border-radius:50%;background:var(--accent-soft);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:transform 4s ease-in-out;">
+                <div id="breathing-text" style="font-size:0.85rem;font-weight:700;color:var(--accent);">Ready</div>
+                <div id="breathing-count" style="font-size:1.75rem;font-weight:800;color:var(--text-primary);line-height:1;"></div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" style="width:100%;" onclick="closeAllModals()">Done</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/dashboard.js"></script>
+</body>
+</html>

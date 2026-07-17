@@ -1,0 +1,4 @@
+# Run commands for Accountabel AI
+
+## Run the server locally (Windows/macOS/Linux)
+go run main.go -telegram_bot_token="YOUR_TELEGRAM_TOKEN_HERE" -gemini_token="YOUR_GEMINI_TOKEN_HERE" -type="gemini"
