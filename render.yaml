@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: accountabel-ai
+    env: docker
+    disk:
+      name: accountabel-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: GEMINI_TOKEN
+        sync: false
+      - key: DISCORD_BOT_TOKEN
+        sync: false
